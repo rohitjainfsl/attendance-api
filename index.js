@@ -22,7 +22,7 @@ const dbConnection = await mongoose.connect(
 if (dbConnection)
   app.listen(port, () => console.log("Server Started on port " + port));
 
-let d = new Date("2004-05-30T00:00:00.000+05:30");
+let d = new Date();
 d.toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
 
 const attendanceSchema = new mongoose.Schema({
@@ -42,7 +42,7 @@ app.post("/saveAttendance", (req, res) => {
   const dataToSave = new attendanceModel(req.body);
   dataToSave
     .save()
-    .then((response) => res.send(true))
+    .then((response) => res.send(response))
     .catch((error) => {
       console.log(error);
       res.send(false);
