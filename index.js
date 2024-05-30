@@ -17,7 +17,7 @@ const dbConnection = await mongoose.connect(
     Musername +
     ":" +
     Mpassword +
-    "@cluster0.4ont6qs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/attendance"
+    "@cluster0.4ont6qs.mongodb.net/attendance?retryWrites=true&w=majority&appName=Cluster0"
 );
 if (dbConnection)
   app.listen(port, () => console.log("Server Started on port " + port));
