@@ -22,8 +22,7 @@ const dbConnection = await mongoose.connect(
 if (dbConnection)
   app.listen(port, () => console.log("Server Started on port " + port));
 
-let d = new Date();
-d.toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
+let d = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
 
 const attendanceSchema = new mongoose.Schema({
   date: {
