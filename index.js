@@ -39,6 +39,10 @@ const facultySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  id: {
+    type: Number,
+    default: Date.now(),
+  },
 });
 
 const studentSchema = new mongoose.Schema({
