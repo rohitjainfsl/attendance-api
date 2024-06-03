@@ -65,7 +65,7 @@ app.post("/saveFaculty", async (req, res) => {
   const dataToSave = new facultyModel(req.body);
   dataToSave
     .save()
-    .then((response) => res.send(response))
+    .then((response) => res.json(response))
     .catch((error) => {
       console.log(error);
       res.send(false);
