@@ -104,3 +104,12 @@ app.post("/saveStudent", async (req, res) => {
       res.send(false);
     });
 });
+
+app.delete("/deleteStudent/:id", async (req, res) => {
+  const idToDelete = req.params.id;
+  const deletedStudent = await studentModel.findOneAndDelete({
+    _id: idToDelete,
+  });
+  if (deletedStudent) res.json("Student Deleted");
+  else res.json(false);
+});
