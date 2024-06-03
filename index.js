@@ -34,15 +34,27 @@ const attendanceSchema = new mongoose.Schema({
     required: true,
   },
 });
-const attendanceModel = mongoose.model("record", attendanceSchema, "record");
-
 const facultySchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
   },
 });
+
+const studentSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  faculty: {
+    type: String,
+    required: true,
+  },
+});
+
+const attendanceModel = mongoose.model("record", attendanceSchema, "record");
 const facultyModel = mongoose.model("faculty", facultySchema, "faculty");
+const studentModel = mongoose.model("student", studentSchema, "student");
 
 app.post("/saveAttendance", (req, res) => {
   const dataToSave = new attendanceModel(req.body);
@@ -63,6 +75,17 @@ app.get("/getFaculty", async (req, res) => {
 
 app.post("/saveFaculty", async (req, res) => {
   const dataToSave = new facultyModel(req.body);
+  dataToSave
+    .save()
+    .then((response) => res.json(response))
+    .catch((error) => {
+      console.log(error);
+      res.send(false);
+    });
+});
+
+app.post("/saveStudent", async (req, res) => {
+  const dataToSave = new studentModel(req.body);
   dataToSave
     .save()
     .then((response) => res.json(response))
