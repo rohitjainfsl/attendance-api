@@ -46,6 +46,10 @@ const facultySchema = new mongoose.Schema({
 });
 
 const studentSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    default: Date.now(),
+  },
   name: {
     type: String,
     required: true,
@@ -72,7 +76,7 @@ app.post("/saveAttendance", (req, res) => {
 });
 
 app.get("/getFaculty", async (req, res) => {
-  const facultyList = await facultyModel.find({});
+  const facultyList = await facultyModel.find({}).select("-__v");
   if (facultyList) res.json(facultyList);
   else res.json(false);
 });
@@ -89,7 +93,7 @@ app.post("/saveFaculty", async (req, res) => {
 });
 
 app.get("/getStudent", async (req, res) => {
-  const studentList = await studentModel.find({});
+  const studentList = await studentModel.find({}).select("-__v");
   if (studentList) res.json(studentList);
   else res.json(false);
 });
@@ -107,9 +111,11 @@ app.post("/saveStudent", async (req, res) => {
 
 app.delete("/deleteStudent/:id", async (req, res) => {
   const idToDelete = req.params.id;
-  const deletedStudent = await studentModel.findOneAndDelete({
-    _id: idToDelete,
-  });
+  const deletedStudent = await studentModel.findOneAndDelete(
+    {
+      _id: idToDelete,
+    }.select("-__v")
+  );
   if (deletedStudent) res.json("Student Deleted");
   else res.json(false);
 });
