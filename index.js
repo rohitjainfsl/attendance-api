@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 import "dotenv/config";
 
 const port = 3000;
@@ -34,11 +34,35 @@ const attendanceSchema = new mongoose.Schema({
     required: true,
   },
 });
-
 const attendanceModel = mongoose.model("record", attendanceSchema, "record");
+
+const facultySchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+});
+const facultyModel = mongoose.model("faculty", facultySchema, "faculty");
 
 app.post("/saveAttendance", (req, res) => {
   const dataToSave = new attendanceModel(req.body);
+  dataToSave
+    .save()
+    .then((response) => res.send(response))
+    .catch((error) => {
+      console.log(error);
+      res.send(false);
+    });
+});
+
+app.get("/getFaculty", async (req, res) => {
+  const facultyList = await facultyModel.find({});
+  if (facultyList) res.json(facultyList);
+  else res.json(false);
+});
+
+app.post("/saveFaculty", async (req, res) => {
+  const dataToSave = new facultyModel(req.body);
   dataToSave
     .save()
     .then((response) => res.send(response))
