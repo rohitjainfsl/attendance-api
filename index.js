@@ -88,6 +88,12 @@ app.post("/saveFaculty", async (req, res) => {
     });
 });
 
+app.get("/getStudent", async (req, res) => {
+  const studentList = await studentModel.find({});
+  if (studentList) res.json(studentList);
+  else res.json(false);
+});
+
 app.post("/saveStudent", async (req, res) => {
   const dataToSave = new studentModel(req.body);
   dataToSave
