@@ -1,7 +1,10 @@
 import express from "express";
 import cors from "cors";
-import mongoose, { Mongoose } from "mongoose";
+import mongoose from "mongoose";
 import "dotenv/config";
+import attendanceModel from "./models/attendance.js";
+import facultyModel from "./models/faculty.js";
+import studentModel from "./models/student.js";
 
 const port = 3000;
 
@@ -22,47 +25,6 @@ const dbConnection = await mongoose.connect(
 if (dbConnection)
   app.listen(port, () => console.log("Server Started on port " + port));
 
-let d = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-
-const attendanceSchema = new mongoose.Schema({
-  date: {
-    type: Date,
-    default: d,
-  },
-  attendance: {
-    type: Object,
-    required: true,
-  },
-});
-const facultySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  id: {
-    type: Number,
-    default: Date.now(),
-  },
-});
-
-const studentSchema = new mongoose.Schema({
-  id: {
-    type: Number,
-    default: Date.now(),
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  faculty: {
-    type: String,
-    required: true,
-  },
-});
-
-const attendanceModel = mongoose.model("record", attendanceSchema, "record");
-const facultyModel = mongoose.model("faculty", facultySchema, "faculty");
-const studentModel = mongoose.model("student", studentSchema, "student");
 
 app.post("/saveAttendance", (req, res) => {
   const dataToSave = new attendanceModel(req.body);
@@ -76,24 +38,36 @@ app.post("/saveAttendance", (req, res) => {
 });
 
 app.get("/getFaculty", async (req, res) => {
-  const facultyList = await facultyModel.find({}).select("-__v");
+  const facultyList = await facultyModel.find({}).select(["-__v", "-_id"]);
   if (facultyList) res.json(facultyList);
   else res.json(false);
 });
 
 app.post("/saveFaculty", async (req, res) => {
+  // console.log(req.body);
   const dataToSave = new facultyModel(req.body);
   dataToSave
     .save()
-    .then((response) => res.json(response))
+    .then((response) => {
+      if (response) res.json("Faculty Added");
+    })
     .catch((error) => {
       console.log(error);
       res.send(false);
     });
 });
 
+app.delete("/deleteFaculty/:id", async (req, res) => {
+  const idToDelete = req.params.id;
+  const deletedFaculty = await facultyModel.findOneAndDelete({
+    id: idToDelete,
+  });
+  if (deletedFaculty) res.json("Faculty Deleted");
+  else res.json(false);
+});
+
 app.get("/getStudent", async (req, res) => {
-  const studentList = await studentModel.find({}).select("-__v");
+  const studentList = await studentModel.find({}).select(["-__v", "-_id"]);
   if (studentList) res.json(studentList);
   else res.json(false);
 });
@@ -102,7 +76,9 @@ app.post("/saveStudent", async (req, res) => {
   const dataToSave = new studentModel(req.body);
   dataToSave
     .save()
-    .then((response) => res.json(response))
+    .then((response) => {
+      if (response) res.json("Student Added");
+    })
     .catch((error) => {
       console.log(error);
       res.send(false);
@@ -112,7 +88,7 @@ app.post("/saveStudent", async (req, res) => {
 app.delete("/deleteStudent/:id", async (req, res) => {
   const idToDelete = req.params.id;
   const deletedStudent = await studentModel.findOneAndDelete({
-    id: idToDelete
+    id: idToDelete,
   });
   if (deletedStudent) res.json("Student Deleted");
   else res.json(false);
