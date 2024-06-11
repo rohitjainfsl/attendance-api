@@ -22,9 +22,15 @@ const dbConnection = await mongoose.connect(
     Mpassword +
     "@cluster0.4ont6qs.mongodb.net/attendance?retryWrites=true&w=majority&appName=Cluster0"
 );
-if (dbConnection)
+if (dbConnection) {
+  try {
+    await facultyModel.createIndexes();
+    await studentModel.createIndexes();
+  } catch (err) {
+    console.error("Error creating indexes:", err);
+  }
   app.listen(port, () => console.log("Server Started on port " + port));
-
+}
 
 app.post("/saveAttendance", (req, res) => {
   const dataToSave = new attendanceModel(req.body);
@@ -52,8 +58,8 @@ app.post("/saveFaculty", async (req, res) => {
       if (response) res.json("Faculty Added");
     })
     .catch((error) => {
-      console.log(error);
-      res.send(false);
+      console.log(error.code);
+      if (error.code === 11000) res.json("Error: Duplicate Aadhaar");
     });
 });
 
@@ -68,6 +74,16 @@ app.delete("/deleteFaculty/:id", async (req, res) => {
 
 app.get("/getStudent", async (req, res) => {
   const studentList = await studentModel.find({}).select(["-__v", "-_id"]);
+  if (studentList) res.json(studentList);
+  else res.json(false);
+});
+
+app.get("/getStudentByFaculty/:faculty", async (req, res) => {
+  const faculty = req.params.faculty;
+  
+  const studentList = await studentModel
+    .find({ faculty: faculty })
+    .select(["-__v", "-_id"]);
   if (studentList) res.json(studentList);
   else res.json(false);
 });

@@ -21,4 +21,10 @@ const studentSchema = new mongoose.Schema({
   },
 });
 const studentModel = mongoose.model("student", studentSchema, "student");
+// Ensure indexes are created
+studentModel.on("index", (err) => {
+  if (err) {
+    console.error("Index creation failed", err);
+  }
+});
 export default studentModel;

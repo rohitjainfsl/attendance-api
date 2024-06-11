@@ -17,4 +17,12 @@ const facultySchema = new mongoose.Schema({
   },
 });
 const facultyModel = mongoose.model("faculty", facultySchema, "faculty");
+
+// Ensure indexes are created
+facultyModel.on("index", (err) => {
+  if (err) {
+    console.error("Index creation failed", err);
+  }
+});
+
 export default facultyModel;
