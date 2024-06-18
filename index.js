@@ -24,6 +24,7 @@ const dbConnection = await mongoose.connect(
 );
 if (dbConnection) {
   try {
+    await attendanceModel.createIndexes();
     await facultyModel.createIndexes();
     await studentModel.createIndexes();
   } catch (err) {
@@ -34,9 +35,13 @@ if (dbConnection) {
 
 app.post("/saveAttendance", (req, res) => {
   const dataToSave = new attendanceModel(req.body);
+
   dataToSave
     .save()
-    .then((response) => res.send(response))
+    .then((response) => {
+      if (response) res.json("Attendance Saved for today");
+      else res.json(false);
+    })
     .catch((error) => {
       console.log(error);
       res.send(false);
@@ -80,10 +85,12 @@ app.get("/getStudent", async (req, res) => {
 
 app.get("/getStudentByFaculty/:faculty", async (req, res) => {
   const faculty = req.params.faculty;
-  
+
   const studentList = await studentModel
     .find({ faculty: faculty })
-    .select(["-__v", "-_id"]);
+    .sort({ name: "asc" })
+    .select(["-__v", "-_id", "-id", "-faculty"]);
+
   if (studentList) res.json(studentList);
   else res.json(false);
 });
