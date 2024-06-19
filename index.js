@@ -12,6 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: "*" }));
+
 const Musername = process.env.MONGO_USERNAME;
 const Mpassword = process.env.MONGO_PASSWORD;
 
